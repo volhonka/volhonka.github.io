@@ -4,17 +4,12 @@ Hello from volhonka.github.io
 </style>
 <div id="ul"></div>
 <script>
- 
- function drow() {
-    ul.innerHTML = '';
+
     fetch('//fednik.ru/weather/api/').then(r => r.json()).then(({ results }) => {
       results.forEach(r => {
         li = document.createElement('pre');
         li.innerText = new Date(r.date).toLocaleString() + '\t' + Math.round(r.temp1)+ '\t' + Math.round(r.temp2)+ '\t' + Math.round(r.temp3);
         ul.appendChild(li);
-        setTimeout(()=>drow(), 30 * 1000)
       })
     })
- }
- drow();
 </script>
