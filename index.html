@@ -1,4 +1,7 @@
 Hello from volhonka.github.io
+<style>
+  * {font-family: Roboto, Arial}
+</style>
 <ul id="ul"></ul>
 <script>
   setInterval(() => {
@@ -6,9 +9,9 @@ Hello from volhonka.github.io
     fetch('//fednik.ru/weather/api/').then(r => r.json()).then(({ results }) => {
       results.forEach(r => {
         li = document.createElement('li');
-        li.innerText = r.date + '|' + r.temp1
+        li.innerText = new Date(r.date).toLocaleString() + '|' + r.temp1
         ul.appendChild(li)
       })
     })
-  }, 1000);
+  }, 1000 * 30);
 </script>
