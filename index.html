@@ -1,4 +1,11 @@
 Hello from volhonka.github.io
+<ul id="ul"></ul>
 <script>
-  fetch('//fednik.ru/weather/api/')
+  fetch('//fednik.ru/weather/api/').then(r => r.json()).then(({ results }) => {
+    results.forEach(r => {
+      li = document.createElement('li');
+      li.innerText = r.date + '|' + r.temp1
+      ul.appendChild(li)
+    })
+  })
 </script>
