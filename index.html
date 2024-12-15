@@ -1,16 +1,98 @@
-Hello from volhonka.github.io
-<style>
-  * {font-family: Roboto, Arial}
-</style>
-<a href="https://narodmon.ru/6163">https://narodmon.ru/6163</a>
-<div id="ul"></div>
-<script>
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Погода Волхонщино</title>
+  <style>
+    :root {
+    font-family: system-ui, Helvetica, Arial, sans-serif;
+    line-height: 1.5;
+    font-weight: 400;
 
-    fetch('//fednik.ru/weather/api/').then(r => r.json()).then(({ results }) => {
-      results.forEach(r => {
-        li = document.createElement('pre');
-        li.innerText = new Date(r.date).toLocaleString() + '\t' + Math.round(r.temp1)+ '\t' + Math.round(r.temp2)+ '\t' + Math.round(r.temp3);
-        ul.appendChild(li);
-      })
-    })
-</script>
+    color-scheme: light dark;
+   
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h2 {
+    font-size: 4rem;
+  }
+  </style>
+</head>
+
+<main>
+  <h1 style=" line-height: 0.98em">
+    Погода в&nbsp;селе&nbsp;Волхонщино
+    <small style="opacity: 0.5; font-size: 0.5em;;">Пензенского&nbsp;района</small>
+  </h1>
+ 
+  Температура за сутки:
+  <br />
+  <label>
+    Минимум: <strong id="minEl"></strong>
+  </label>
+  <br />
+  <label>
+    Максимум: <strong id="maxEl"></strong>
+  </label>
+  <br />
+  <label>
+    Средняя: <strong id="avgEl"></strong>
+  </label>
+  <br />
+
+
+
+  <h2 style="text-align: center; margin-bottom: 0;" id="cur"></h2>
+  <small style="text-align: center; display: block; opacity: 0.5; margin-bottom: 5rem;" >Прямой сейчас рядом со школой</small>
+
+
+  
+  <br />
+  <label>
+    Атмосферное давление: <strong id="pressureCurrentEl"></strong>
+  </label>
+ 
+
+</main>
+
+<body>
+  <script>
+    const start = async () => {
+      const qp = new URLSearchParams();
+      qp.append('fields', 'date,temp3,pressure');
+      const raw = await fetch(`https://fednik.ru/weather/api/?${qp.toString()}`);
+      const data = await raw.json();
+
+      const results = data.results.filter((r, i, all) =>  Number.isFinite(parseFloat(r.temp3)) && (r.temp3 - all[i-1]?.temp3 ?? r.temp3) < 1);
+      const temps = results.map((r) => parseFloat(r.temp3));
+      const pressures = results.map((r) => (parseFloat(r.pressure) * 0.75) / 100 );
+
+      const max = Math.max(...temps)
+      const min = Math.min(...temps)
+
+
+      const maxObj = results.find((r) => r.temp3 === max.toString())
+      const minObj = results.find((r) => r.temp3 === min.toString());
+
+      console.log({ results, max, min })
+
+      minEl.textContent = min + '°C в ' +  new Date(minObj.date).toLocaleTimeString(navigator.language, { timeStyle:"short" });
+      maxEl.textContent = max + '°C в ' +  new Date(maxObj.date).toLocaleTimeString(navigator.language, { timeStyle:"short" });
+      avgEl.textContent = (temps.reduce((a, v) => a + v, 0) / temps.length).toFixed(2) + '°C';
+
+      cur.textContent = temps[0] + '°C'
+
+
+pressureCurrentEl.textContent = Math.round(pressures[0]) + ' мм. рт. ст.'
+
+    }
+
+    start();
+  </script>
+</body>
+</html>
